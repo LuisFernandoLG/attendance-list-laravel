@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\EventController;
-use App\Mail\VerifyAccountByEmail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,15 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/send', function (Request $request) {
-   Mail::to('grave281@gmail.com')->send(new VerifyAccountByEmail);
-});
-
-Route::middleware(['auth:sanctum'])->group(function () {
-
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-
-
+Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+    return $request->user();
 });
