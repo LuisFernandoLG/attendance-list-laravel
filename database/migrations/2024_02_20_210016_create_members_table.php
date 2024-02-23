@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('custom_id')->unique();
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->string('phone')->nullable();
+            $table->string('details')->nullable();
             $table->text('image_url')->nullable();
-            $table->boolean('notifyByEmail')->default(true);
+            $table->boolean('notifyByEmail')->default(false);
             $table->boolean('notifyByPhone')->default(false);
             $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

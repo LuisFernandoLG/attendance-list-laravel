@@ -3,6 +3,10 @@
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\RegisterUserController;
 use App\Http\Controllers\api\VerifyEmailController;
+use App\Http\Controllers\attendanceController;
+use App\Http\Controllers\ControlledListRecordController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\MemberController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +40,14 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'store']);
 });
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/attendance/{eventId}/{shortId}', [ControlledListRecordController::class, 'store']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::post('/events', [EventController::class, 'store']);
+    Route::post('/members', [MemberController::class, 'store']);
+    // Add more routes here that you want to apply the middleware to
 });

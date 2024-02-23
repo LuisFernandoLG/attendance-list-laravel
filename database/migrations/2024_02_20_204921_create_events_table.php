@@ -20,6 +20,8 @@ return new class extends Migration
         self::eventType['UNCONTROLLED'],
     ];
 
+    
+
     public function up(): void
     {
         Schema::create('events', function (Blueprint $table) {
@@ -28,6 +30,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('image_url')->nullable();
             $table->string('type')->list(self::eventTypeList);
+            $table->string('attandance_type')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
