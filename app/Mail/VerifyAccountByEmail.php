@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,10 +17,12 @@ class VerifyAccountByEmail extends Mailable
 
     /**
      * Create a new message instance.
+     * 
+     * @param User $user
+     * @param string $code
      */
-    public function __construct()
+    public function __construct(public User $user, public $code)
     {
-        //
     }
 
     /**

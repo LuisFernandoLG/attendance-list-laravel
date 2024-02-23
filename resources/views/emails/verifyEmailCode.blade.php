@@ -7,6 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    
+        email:  {{ $user->email }}
+        code: {{ $code }}
 </body>
 </html>
