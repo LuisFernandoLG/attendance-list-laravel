@@ -16,4 +16,9 @@ class Event extends Model
     {
         return $this->hasMany(EventDate::class);
     }
+
+    public function members()
+    {
+        return $this->hasMany(Member::class);
+    }
 }

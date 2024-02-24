@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 // update - PUT/PATCH /users/{id}
 // destroy - DELETE /users/{id}
 
+Route::get('/attendance/{eventId}/{shortId}', [ControlledListRecordController::class, 'store']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterUserController::class, 'store']);
@@ -40,14 +41,16 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'store']);
 });
 
-Route::get('/attendance/{eventId}/{shortId}', [ControlledListRecordController::class, 'store']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', [AuthController::class, 'show']);
+    Route::post('/logout', [AuthController::class, 'destroy']);
 
+    Route::get('/events', [EventController::class, 'index']);
+    Route::get('/events/{id}', [EventController::class, 'show']);
+    Route::get('/events/{id}/members', [EventController::class, 'showWithMembers']);
+    Route::get('/events/{id}/attendance', [EventController::class, 'showWithAttendance']);
     Route::post('/events', [EventController::class, 'store']);
+    Route::delete('/events/{id}', [EventController::class, 'destroy']);
     Route::post('/members', [MemberController::class, 'store']);
-    // Add more routes here that you want to apply the middleware to
 });

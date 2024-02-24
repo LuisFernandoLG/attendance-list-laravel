@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ControlledListRecord;
 use App\Models\Event;
 use App\Models\EventDate;
+use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,8 +16,15 @@ class EventController extends Controller
      */
     public function index()
     {
-        //
+        $events = Event::where('user_id', request()->user()->id)->get();
+
+        return response()->json([
+            'message' => 'items retrieved successfully',
+            'items' => $events
+        ]);
     }
+
+    // public function p
 
     /**
      * Show the form for creating a new resource.
@@ -76,14 +85,65 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Event $event)
+    public function show(Request $request, $id)
     {
-        //
+        $event = Event::where('id', $id)->where('user_id', $request->user()->id)->first();
+        $event->load('dates');
+
+        if(!$event){
+            return response()->json([
+                'message' => 'item not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'item retrieved successfully',
+            'item' => $event
+        ]);
+    }
+
+    
+    public function showWithMembers(Request $request, $id)
+    {
+        $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
+
+        if(!$event){
+            return response()->json([
+                'message' => 'item not found'
+            ], 404);
+        }
+
+        $memberListPagination = Member::where('event_id', $event->id)->paginate(10);
+
+        return response()->json([
+            'message' => 'item retrieved successfully',
+            'pagination' => $memberListPagination
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
+
+    public function showWithAttendance(Request $request, $id)
+    {
+        $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
+
+        if(!$event){
+            return response()->json([
+                'message' => 'item not found'
+            ], 404);
+        }
+
+        $attendance = ControlledListRecord::where('event_id', $id)->get();
+
+        return response()->json([
+            'message' => 'item retrieved successfully',
+            'items' => $attendance
+        ]);
+    }
+
+
     public function edit(Event $event)
     {
         //
@@ -100,8 +160,22 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Event $event)
+    public function destroy(Request $request)
     {
-        //
+
+        $event = Event::where('id', $request->id)->where('user_id', $request->user()->id)->first();
+
+        if(!$event){
+            return response()->json([
+                'message' => 'item not found'
+            ], 404);
+        }
+
+        $event->delete();
+
+        return response()->json([
+            'message' => 'item deleted successfully'
+        ]);
     }
+
 }
