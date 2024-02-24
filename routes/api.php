@@ -3,12 +3,10 @@
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\RegisterUserController;
 use App\Http\Controllers\api\VerifyEmailController;
-use App\Http\Controllers\attendanceController;
 use App\Http\Controllers\ControlledListRecordController;
+use App\Http\Controllers\EventAttendanceController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\MemberController;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\EventMemberController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,12 +48,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::middleware(['verified'])->group(function () {
         Route::get('/events', [EventController::class, 'index']);
-        Route::get('/events/{id}', [EventController::class, 'show']);
-        Route::get('/events/{id}/members', [EventController::class, 'showWithMembers']);
-        Route::get('/events/{id}/attendance', [EventController::class, 'showWithAttendance']);
         Route::post('/events', [EventController::class, 'store']);
+        Route::get('/events/{id}', [EventController::class, 'show']);
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
-        Route::post('/members', [MemberController::class, 'store']);
+        Route::get('/events/{id}/attendance', [EventAttendanceController::class, 'show']);
+        
+        Route::post('/events/{id}/members', [EventMemberController::class, 'store']);
+        Route::get('/events/{id}/members', [EventMemberController::class, 'index']);
+        
     });
     
 });

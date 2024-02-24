@@ -66,12 +66,7 @@ class EventController extends Controller
      */
     public function show(EventRequest $eventRequest, Event $event)
     {
-        $event->load('dates');
-
-        return response()->json([
-            'message' => 'item retrieved successfully',
-            'item' => $event
-        ]);
+        
     }
 
     
@@ -97,22 +92,9 @@ class EventController extends Controller
      * Show the form for editing the specified resource.
      */
 
-    public function showWithAttendance(Request $request, $id)
+    public function showWithAttendance()
     {
-        $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
-
-        if(!$event){
-            return response()->json([
-                'message' => 'item not found'
-            ], 404);
-        }
-
-        $attendance = ControlledListRecord::where('event_id', $id)->get();
-
-        return response()->json([
-            'message' => 'item retrieved successfully',
-            'items' => $attendance
-        ]);
+        
     }
 
 

@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
-use Illuminate\Http\Request;
 
 class RegisterUserService
 {
@@ -35,17 +34,18 @@ class RegisterUserService
         $validation = (new Otp())->validate($email, $code);
 
         if (!$validation->status) {
-            $user->markEmailAsVerified();
             throw new \Exception($validation->message);
         }
-
+        
+        $user->markEmailAsVerified();
         return 'Email verified';
     }
 
     public function resendEmail($email): string
     {
         $user = User::where('email', $email)->first();
-        if(!$user->hasVerifiedEmail()) return 'Email has been already verified';
+
+        if($user->hasVerifiedEmail()) return 'Email has been already verified';
         
         $this->sendEmail($user);
         return 'Email sent successfully';
