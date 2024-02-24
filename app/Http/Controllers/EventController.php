@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventRequest;
+use App\Http\Requests\StoreEventRequest;
 use App\Models\ControlledListRecord;
 use App\Models\Event;
 use App\Models\EventDate;
@@ -37,29 +39,8 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEventRequest $request)
     {
-        $validation = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'image_url' => 'string',
-            'type' => 'required|string|in:CONTROLLED,UNCONTROLLED',
-            'dates' => 'required|array|min:1',
-            'dates.*' => [
-                'required',
-                'date',
-                'after_or_equal:today',
-                'date_format:Y-m-d'
-            ]
-        ]);  
-
-        if($validation->fails()){
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validation->errors()
-            ], 400);
-        }
-
         $event = Event::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -78,23 +59,14 @@ class EventController extends Controller
             'message' => 'Event created successfully',
             'item' => $event->load('dates')
         ]);
-
-
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, $id)
+    public function show(EventRequest $eventRequest, Event $event)
     {
-        $event = Event::where('id', $id)->where('user_id', $request->user()->id)->first();
         $event->load('dates');
-
-        if(!$event){
-            return response()->json([
-                'message' => 'item not found'
-            ], 404);
-        }
 
         return response()->json([
             'message' => 'item retrieved successfully',

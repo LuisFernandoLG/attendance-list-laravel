@@ -3,71 +3,33 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResendEmailVerificationRequest;
+use App\Http\Requests\VerifyEmailRequest;
+use App\Http\Services\RegisterUserService;
 use App\Models\User;
-use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class VerifyEmailController extends Controller
 {
-    public function store(Request $request){
-
-        $fields = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'code' => 'required|string'
-        ]);
-
-        if($fields->fails()){
+    public function store(VerifyEmailRequest $request, RegisterUserService $registerUserService){      
+        try {
+            $result = $registerUserService->verifyEmailOtp($request->email, $request->code);
             return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $fields->errors()
+                'message' => $result
             ]);
-        }
 
-        $user = User::where('email', $request->email)->first();
-
-        if(!$user){
+        } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'User not found',
-                'errors' => ['email' => 'Email not found']
-            ], 404);
-        }
-
-        $validation = (new Otp())->validate($user->email, $request->code);
-        if($validation->status){
-
-            $user->markEmailAsVerified();
-            return response()->json([
-                'message' => 'User verified successfully'
-            ]);
-        }
-
-        $isUserVerified = $user->hasVerifiedEmail();
-
-        if($isUserVerified){
-            return response()->json([
-                'message' => 'User already verified'
-            ]);
-        }
-
-        // messagge: OTP Expired,
-
-        if($validation->message == 'OTP Expired'){
-            return response()->json([
-                'message' => 'OTP Expired',
-                'errors' => ['code' => 'OTP Expired'],
+                'message' => $th->getMessage(),
             ], 400);
         }
+    }
 
+    public function show(ResendEmailVerificationRequest $request, RegisterUserService $registerUserService){
+        $result = $registerUserService->resendEmail($request->email);
 
-
-        // responde 400
         return response()->json([
-            'message' => 'Invalid code',
-            'errors' => ['code' => 'Invalid code'],
-            'validation' => $validation,
-
-        ], 400);
-
+            'message' => $result
+        ]);
     }
 }

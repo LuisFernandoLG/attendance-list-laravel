@@ -37,6 +37,7 @@ Route::get('/attendance/{eventId}/{shortId}', [ControlledListRecordController::c
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterUserController::class, 'store']);
+    Route::get('/resend-email', [VerifyEmailController::class, 'show']);
     Route::post('/verify-email', [VerifyEmailController::class, 'store']);
     Route::post('/login', [AuthController::class, 'store']);
 });
@@ -46,11 +47,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [AuthController::class, 'show']);
     Route::post('/logout', [AuthController::class, 'destroy']);
 
-    Route::get('/events', [EventController::class, 'index']);
-    Route::get('/events/{id}', [EventController::class, 'show']);
-    Route::get('/events/{id}/members', [EventController::class, 'showWithMembers']);
-    Route::get('/events/{id}/attendance', [EventController::class, 'showWithAttendance']);
-    Route::post('/events', [EventController::class, 'store']);
-    Route::delete('/events/{id}', [EventController::class, 'destroy']);
-    Route::post('/members', [MemberController::class, 'store']);
+
+    Route::middleware(['verified'])->group(function () {
+        Route::get('/events', [EventController::class, 'index']);
+        Route::get('/events/{id}', [EventController::class, 'show']);
+        Route::get('/events/{id}/members', [EventController::class, 'showWithMembers']);
+        Route::get('/events/{id}/attendance', [EventController::class, 'showWithAttendance']);
+        Route::post('/events', [EventController::class, 'store']);
+        Route::delete('/events/{id}', [EventController::class, 'destroy']);
+        Route::post('/members', [MemberController::class, 'store']);
+    });
+    
 });
