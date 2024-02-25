@@ -43,20 +43,6 @@ class MemberController extends Controller
         //
     }
 
-    // recursive function to generate a random human id
-    private function getRandomHumanId($eventId, $membersCount, $randomNumber){
-        $sqids = new Sqids();
-        $id = $sqids->encode([$eventId, $membersCount, $randomNumber]);
-
-        // check if the id exists
-        $member = Member::where('custom_id', $id)->first();
-        if ($member) {
-            $randomNumber = rand(1000, 9999);
-            return $this->getRandomHumanId($eventId, $membersCount, $randomNumber);
-        }
-
-        return $id;
-    }
 
     /**
      * Show the form for editing the specified resource.

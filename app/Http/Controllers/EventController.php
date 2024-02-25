@@ -66,7 +66,12 @@ class EventController extends Controller
      */
     public function show(EventRequest $eventRequest, Event $event)
     {
-        
+        $event->load('dates');
+
+        return response()->json([
+            'message' => 'item retrieved successfully',
+            'item' => $event
+        ]);
     }
 
     

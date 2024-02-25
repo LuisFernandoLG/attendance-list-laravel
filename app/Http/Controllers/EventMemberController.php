@@ -8,11 +8,13 @@ use App\Models\Event;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Sqids\Sqids;
 
 class EventMemberController extends Controller
 {
-    public function index(EventRequest $eventRequest, Event $event){
-        $event->load('dates');
+    public function index(EventRequest $eventRequest, $id){
+        $event = Event::find($id);
+        $event->load('members');
 
         return response()->json([
             'message' => 'item retrieved successfully',
@@ -20,10 +22,9 @@ class EventMemberController extends Controller
         ]);
     }
 
-    public function store(StoreEventMemberRequest $request){
+    public function store(StoreEventMemberRequest $request, $eventId){
         // get the count members of the event
-        $membersCount = Member::where('event_id', $request->event_id)->count() + 1;
-        $eventId = $request->event_id;
+        $membersCount = Member::where('event_id', $eventId)->count() + 1;
         $randomNumber = rand(100, 999);
 
         $shortHumanId = $this->getRandomHumanId($eventId, $membersCount, $randomNumber);
@@ -38,13 +39,39 @@ class EventMemberController extends Controller
             // 'image_url' => $request->image_url,
             // 'notifyByEmail' => $request->notifyByEmail,
             // 'notifyByPhone' => $request->notifyByPhone,
-            'event_id' => $request->event_id,
+            'event_id' => $eventId,
         ]);
 
         return response()->json([
             'message' => 'Member created successfully',
-            'item' => $member
+            'item' => $member,
+            'url_attendance' =>  route('attendance.store', ['event' => $eventId, 'shortId' => $shortHumanId])
         ]);
 
+    }
+
+    public function destroy(Request $request, Event $event, Member $member){
+        $member->delete();
+
+        return response()->json([
+            'message' => 'Member deleted successfully',
+            'item' => $member,
+            'event' => $event
+        ]);
+    }
+
+    // recursive function to generate a random human id
+    private function getRandomHumanId($eventId, $membersCount, $randomNumber){
+        $sqids = new Sqids();
+        $id = $sqids->encode([$eventId, $membersCount, $randomNumber]);
+
+        // check if the id exists
+        $member = Member::where('custom_id', $id)->first();
+        if ($member) {
+            $randomNumber = rand(1000, 9999);
+            return $this->getRandomHumanId($eventId, $membersCount, $randomNumber);
+        }
+
+        return $id;
     }
 }

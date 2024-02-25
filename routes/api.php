@@ -7,6 +7,7 @@ use App\Http\Controllers\ControlledListRecordController;
 use App\Http\Controllers\EventAttendanceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventMemberController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 // update - PUT/PATCH /users/{id}
 // destroy - DELETE /users/{id}
 
-Route::get('/attendance/{eventId}/{shortId}', [ControlledListRecordController::class, 'store']);
+Route::get('/attendance/{event}/{shortId}', [ControlledListRecordController::class, 'store'])->name('attendance.store');
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterUserController::class, 'store']);
@@ -53,8 +54,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
         Route::get('/events/{id}/attendance', [EventAttendanceController::class, 'show']);
         
+        // TODO: return url to register attendance
         Route::post('/events/{id}/members', [EventMemberController::class, 'store']);
         Route::get('/events/{id}/members', [EventMemberController::class, 'index']);
+        Route::delete('/events/{event}/members/{member}', [EventMemberController::class, 'destroy']);
         
     });
     

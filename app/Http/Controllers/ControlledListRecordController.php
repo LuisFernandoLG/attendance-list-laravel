@@ -32,14 +32,6 @@ class ControlledListRecordController extends Controller
     public function store(Request $request, $eventId, $shortId)
     {
 
-        // validate if event exists
-        $event = Event::find($eventId);
-        if (!$event) {
-            return response()->json([
-                'message' => 'Event not found'
-            ], 404);
-        }
-
         // validate if the user is owner of the event
         $user = Member::where('event_id', $eventId)
             ->where('custom_id', $shortId)
@@ -56,12 +48,16 @@ class ControlledListRecordController extends Controller
         // validate if the array of dates is any of them today
         $dates = EventDate::where('event_id', $eventId)->get();
 
+        // get today's date
         $today = date('Y-m-d');
+        // dates look like this 2021-08-01 00:00:00
 
         $dateValid = false;
 
         foreach ($dates as $date) {
-            if ($date->date == $today) {
+            $date = date('Y-m-d', strtotime($date->date));
+            dd($date, $today);
+            if ($date === $today) {
                 $dateValid = true;
                 break;
             }

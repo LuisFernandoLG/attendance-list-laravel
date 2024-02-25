@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Event;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEventMemberRequest extends FormRequest
@@ -9,10 +10,14 @@ class StoreEventMemberRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        // validate if the user is owner of the event
-        return $this->event->user_id === $this->user()->id;
+        // validate if the user is owner of the event, user id is on the url
+        $id = $this->route('id');
+        $user_id = $this->user()->id;
+
+        $is_owner = Event::where('id', $id)->where('user_id', $user_id)->exists();
+        return $is_owner;
     }
 
     /**
@@ -30,7 +35,6 @@ class StoreEventMemberRequest extends FormRequest
             'image_url' => 'string',
             'notifyByEmail' => 'boolean',
             'notifyByPhone' => 'boolean',
-            'event_id' => 'required|integer|exists:events,id',
         ];
     }
 }
