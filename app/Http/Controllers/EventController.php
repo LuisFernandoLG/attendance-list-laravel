@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\EventDate;
 use App\Models\Member;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,12 +41,48 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    private function storeImage($request)
+    {
+        try {
+            
+            $image = $request->file('image');
+
+            $client = new Client();
+            $response = $client->post('https://api.imgbb.com/1/upload', [
+                'multipart' => [
+                    [
+                        'name' => 'image',
+                        'contents' => fopen($image->getPathname(), 'r'),
+                        'filename' => $image->getClientOriginalName()
+                    ],
+                    [
+                        'name' => 'key',
+                        'contents' => env('IMGBB_API_KEY')
+                    ]
+                ]
+            ]);
+
+            $json = json_decode($response->getBody()->getContents(), true);
+            $data = $json['data'];
+            return $data['url'];
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+    }
+
     public function store(StoreEventRequest $request)
     {
+
+        $res = $this->storeImage($request);
+        $image_url = $res ? $res : 'https://picsum.photos/id/1/200/300';
+    
         $event = Event::create([
             'name' => $request->name,
             'description' => $request->description,
             'type' => $request->type,
+            'image_url' => $image_url,
             'user_id' => $request->user()->id
         ]);
 

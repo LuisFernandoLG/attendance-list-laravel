@@ -24,7 +24,7 @@ class StoreEventRequest extends FormRequest
         return [
             'name' => 'required|string',
             'description' => 'required|string',
-            'image_url' => 'string',
+            'image' => 'image|mimes:jpg,png,jpeg,webp|max:2048',
             'type' => 'required|string|in:CONTROLLED,UNCONTROLLED',
             'dates' => 'required|array|min:1',
             'dates.*' => [
