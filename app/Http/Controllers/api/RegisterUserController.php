@@ -16,7 +16,7 @@ use Ichtrojan\Otp\Otp;
 class RegisterUserController extends Controller
 {
     public function store(RegisterUserRequest $request, RegisterUserService $registerUserService){
-        $user = $registerUserService->register($request->name, $request->email, $request->password);
+        $user = $registerUserService->register($request->name, $request->email, $request->password, $request->timezone);
         $registerUserService->sendEmail($user);
     
         $token = $user->createToken('api-token')->plainTextToken;

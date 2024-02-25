@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('rol')->list(self::roles)->default('none');
             $table->string('auth_type')->list(self::authTypes)->default('email');
             $table->text('image_url')->nullable();
+            $table->string('timezone');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

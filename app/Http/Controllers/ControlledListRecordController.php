@@ -6,6 +6,7 @@ use App\Models\ControlledListRecord;
 use App\Models\Event;
 use App\Models\EventDate;
 use App\Models\Member;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ControlledListRecordController extends Controller
@@ -29,34 +30,37 @@ class ControlledListRecordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    //  TODO refactor this method
     public function store(Request $request, $eventId, $shortId)
     {
 
+        
         // validate if the user is owner of the event
         $user = Member::where('event_id', $eventId)
-            ->where('custom_id', $shortId)
-            ->first();
-
+        ->where('custom_id', $shortId)
+        ->first();
+        
         if (!$user) {
             return response()->json([
                 'message' => 'User not found'
             ], 404);
         }
-
+        
+        $timezone = $request->timezone ? $request->timezone : $user->get_timezone_of_event();
         // validate dates
 
         // validate if the array of dates is any of them today
         $dates = EventDate::where('event_id', $eventId)->get();
 
         // get today's date
-        $today = date('Y-m-d');
         // dates look like this 2021-08-01 00:00:00
+        $today = Carbon::now()->setTimezone('UTC')->toDateString();
 
         $dateValid = false;
 
         foreach ($dates as $date) {
             $date = date('Y-m-d', strtotime($date->date));
-            dd($date, $today);
             if ($date === $today) {
                 $dateValid = true;
                 break;
@@ -69,13 +73,18 @@ class ControlledListRecordController extends Controller
             ], 404);
         }
 
-        ControlledListRecord::create([
+        $attendance = ControlledListRecord::create([
             'event_id' => $eventId,
-            'member_id' => $user->id
+            'member_id' => $user->id,
         ]);
 
+
+        $attendance_local_time = Carbon::parse($attendance->created_at)->setTimezone($timezone)->toDateTimeString();
+
         return response()->json([
-            'message' => 'Attendance recorded'
+            'message' => 'Attendance recorded',
+            'attendance_at' => $attendance_local_time,
+            'timezone' => $timezone,
         ]);
     }
 

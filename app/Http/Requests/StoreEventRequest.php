@@ -30,8 +30,7 @@ class StoreEventRequest extends FormRequest
             'dates.*' => [
                 'required',
                 'date',
-                'after_or_equal:today',
-                'date_format:Y-m-d'
+                'date_format:Y-m-d H:i:s',
             ]
         ];
     }

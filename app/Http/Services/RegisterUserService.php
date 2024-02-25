@@ -8,12 +8,14 @@ use Ichtrojan\Otp\Otp;
 class RegisterUserService
 {
 
-    public function register($name, $email, $password): User
+    public function register($name, $email, $password, $timezone): User
     {
+        // dd($name, $email, $password, $timezone);
         $user = User::create([
             'name' => $name,
             'email' => $email,
-            'password' => $password
+            'password' => $password,
+            'timezone' => $timezone
         ]);
 
         return $user;

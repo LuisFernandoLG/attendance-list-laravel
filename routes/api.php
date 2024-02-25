@@ -54,7 +54,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
         Route::get('/events/{id}/attendance', [EventAttendanceController::class, 'show']);
         
-        // TODO: return url to register attendance
         Route::post('/events/{id}/members', [EventMemberController::class, 'store']);
         Route::get('/events/{id}/members', [EventMemberController::class, 'index']);
         Route::delete('/events/{event}/members/{member}', [EventMemberController::class, 'destroy']);

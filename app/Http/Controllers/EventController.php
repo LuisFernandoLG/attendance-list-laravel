@@ -8,6 +8,7 @@ use App\Models\ControlledListRecord;
 use App\Models\Event;
 use App\Models\EventDate;
 use App\Models\Member;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,16 +49,25 @@ class EventController extends Controller
             'user_id' => $request->user()->id
         ]);
 
-        EventDate::insert(array_map(function($date) use ($event){
+        $user_timezone = $request->user()->timezone;
+
+        EventDate::insert(array_map(function($date) use ($event, $user_timezone) {
+
+            $utc_date = Carbon::createFromFormat('Y-m-d H:i:s', $date, $user_timezone)->setTimezone('UTC');
+
             return [
-                'date' => $date,
+                'date' => $utc_date,
                 'event_id' => $event->id
             ];
         }, $request->dates));
 
+        $dates = $event->datesToUserTimezone();
+        // spread the dates to the the event object
+        $event->local_dates = $dates;
+
         return response()->json([
             'message' => 'Event created successfully',
-            'item' => $event->load('dates')
+            'item' => $event,
         ]);
     }
 

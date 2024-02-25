@@ -15,4 +15,11 @@ class Member extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function get_timezone_of_event()
+    {
+        $event = Event::where('id', $this->event_id)->first();
+        $author = User::where('id', $event->user_id)->first();
+        return $author->timezone;
+    }
 }
