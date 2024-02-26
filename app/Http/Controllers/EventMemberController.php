@@ -18,6 +18,11 @@ class EventMemberController extends Controller
 
         $memberListPagination = Member::where('event_id', $event->id)->paginate(10);
 
+        $memberListPagination->getCollection()->transform(function ($member) use ($event) {
+            $member->url_attendance = route('attendance.store', ['event' => $event->id, 'shortId' => $member->custom_id]);
+            return $member;
+        });
+
         return response()->json([
             'message' => 'Pagination retrieved successfully',
             'pagination' => $memberListPagination

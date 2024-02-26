@@ -23,4 +23,10 @@ class Member extends Model
         return $author->timezone;
     }
 
+    public function attendance_url()
+    {
+        $url = route('attendance.store', ['event' => '1', 'shortId' =>'1']);
+        return $url;
+    }
+
 }
