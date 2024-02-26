@@ -8,6 +8,7 @@ use App\Models\EventDate;
 use App\Models\Member;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ControlledListRecordController extends Controller
 {
@@ -84,7 +85,7 @@ class ControlledListRecordController extends Controller
             'message' => 'Attendance recorded',
             'attendance_at' => $attendance_local_time,
             'timezone' => $timezone,
-        ]);
+        ], Response::HTTP_CREATED);
     }
 
     /**

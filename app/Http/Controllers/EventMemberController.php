@@ -39,9 +39,9 @@ class EventMemberController extends Controller
         $member = Member::create([
             'name' => $request->name,
             // extract first three letters of the name and append
-            'custom_id' => $shortHumanId,
-            // 'email' => $request->email,
-            // 'phone' => $request->phone,
+            'custom_id' => $shortHumanId ,
+            'email' => $request->email ?? null,
+            'phone' => $request->phone ?? null,
             // 'details' => $request->details,
             // 'image_url' => $request->image_url,
             // 'notifyByEmail' => $request->notifyByEmail,
@@ -70,9 +70,9 @@ class EventMemberController extends Controller
     public function edit(Request $request, Event $event, Member $member){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
+            'phone' => 'string|max:255',
             'details' => 'required|string|max:255',
-            'image_url' => 'required|string|max:255',
+            'image_url' => 'string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -84,9 +84,9 @@ class EventMemberController extends Controller
 
         $member->update([
             'name' => $request->name,
-            'phone' => $request->phone,
             'details' => $request->details,
-            'image_url' => $request->image_url,
+            'phone' => $request->phone ?? null,
+            'image_url' => $request->image_url ?? null,
         ]);
 
         return response()->json([
