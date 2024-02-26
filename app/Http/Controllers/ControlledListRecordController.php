@@ -31,7 +31,6 @@ class ControlledListRecordController extends Controller
      * Store a newly created resource in storage.
      */
 
-    //  TODO refactor this method
     public function store(Request $request, $eventId, $shortId)
     {
 

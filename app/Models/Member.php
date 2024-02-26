@@ -22,4 +22,5 @@ class Member extends Model
         $author = User::where('id', $event->user_id)->first();
         return $author->timezone;
     }
+
 }

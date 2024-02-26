@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Services;
+
 use App\Http\Requests\StoreEventRequest;
 use App\Models\Event;
 use App\Models\EventDate;
@@ -7,6 +9,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection as SupportCollection;
 
 class EventService
 {
@@ -54,7 +57,7 @@ class EventService
         EventDate::where('event_id', $eventId)->delete();
     }
 
-    public function insertDatesToEvent(Request $request, $event): array
+    public function insertDatesToEvent(Request $request, $event): SupportCollection
     {
         $user_timezone = $request->user()->timezone;
 
@@ -75,7 +78,7 @@ class EventService
     public function registerEvent(StoreEventRequest $request): Event
     {
 
-        $res = $this->storeImage($request);
+        $res = $request->hasFile('image') ? $this->storeImage($request) : null;
         $image_url = $res ? $res : 'https://picsum.photos/id/1/200/300';
 
         $event = Event::create([
@@ -94,8 +97,9 @@ class EventService
         return $event;
     }
 
-    public function updateEvent(Request $request, $event): Event
+    public function updateEvent(Request $request, $id): Event
     {
+        $event = Event::find($id);
         $res = $this->storeImage($request);
         $image_url = $res ? $res : $event->image_url;
 

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEventMemberRequest;
 use App\Models\Event;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Sqids\Sqids;
 
@@ -47,7 +48,7 @@ class EventMemberController extends Controller
             'message' => 'Member created successfully',
             'item' => $member,
             'url_attendance' =>  route('attendance.store', ['event' => $eventId, 'shortId' => $shortHumanId])
-        ]);
+        ], Response::HTTP_CREATED);
 
     }
 
@@ -56,6 +57,35 @@ class EventMemberController extends Controller
 
         return response()->json([
             'message' => 'Member deleted successfully',
+            'item' => $member,
+            'event' => $event
+        ]);
+    }
+
+    public function edit(Request $request, Event $event, Member $member){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'details' => 'required|string|max:255',
+            'image_url' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $member->update([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'details' => $request->details,
+            'image_url' => $request->image_url,
+        ]);
+
+        return response()->json([
+            'message' => 'Member updated successfully',
             'item' => $member,
             'event' => $event
         ]);

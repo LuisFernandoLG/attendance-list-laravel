@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EditEventRequest;
 use App\Http\Requests\EventRequest;
 use App\Http\Requests\StoreEventRequest;
+use App\Http\Services\EventService;
 use App\Models\ControlledListRecord;
 use App\Models\Event;
 use App\Models\EventDate;
 use App\Models\Member;
 use Carbon\Carbon;
-use EventService;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
@@ -52,7 +53,7 @@ class EventController extends Controller
         return response()->json([
             'message' => 'Event created successfully',
             'item' => $event,
-        ]);
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -76,9 +77,10 @@ class EventController extends Controller
 
 
 
-    public function edit(EditEventRequest $request, $event, EventService $eventService)
+    //  TODO : This function not working
+    public function edit(EditEventRequest $request, $id, EventService $eventService)
     {
-        $event = $eventService->updateEvent($request, $event);
+        $event = $eventService->updateEvent($request, $id);
 
         return response()->json([
             'message' => 'item updated successfully',
