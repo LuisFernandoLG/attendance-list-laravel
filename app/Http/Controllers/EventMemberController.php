@@ -13,12 +13,13 @@ use Sqids\Sqids;
 class EventMemberController extends Controller
 {
     public function index(EventRequest $eventRequest, $id){
-        $event = Event::find($id);
-        $event->load('members');
+        $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
+
+        $memberListPagination = Member::where('event_id', $event->id)->paginate(10);
 
         return response()->json([
-            'message' => 'item retrieved successfully',
-            'item' => $event
+            'message' => 'Pagination retrieved successfully',
+            'pagination' => $memberListPagination
         ]);
     }
 

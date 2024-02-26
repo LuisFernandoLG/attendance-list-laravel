@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditEventRequest;
 use App\Http\Requests\EventRequest;
 use App\Http\Requests\StoreEventRequest;
 use App\Models\ControlledListRecord;
@@ -9,6 +10,7 @@ use App\Models\Event;
 use App\Models\EventDate;
 use App\Models\Member;
 use Carbon\Carbon;
+use EventService;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,9 +20,9 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, EventService $eventService)
     {
-        $events = Event::where('user_id', request()->user()->id)->get();
+        $events = $eventService->get_all($request);
 
         return response()->json([
             'message' => 'items retrieved successfully',
@@ -42,65 +44,10 @@ class EventController extends Controller
      * Store a newly created resource in storage.
      */
 
-    private function storeImage($request)
+
+    public function store(StoreEventRequest $request, EventService $eventService)
     {
-        try {
-            
-            $image = $request->file('image');
-
-            $client = new Client();
-            $response = $client->post('https://api.imgbb.com/1/upload', [
-                'multipart' => [
-                    [
-                        'name' => 'image',
-                        'contents' => fopen($image->getPathname(), 'r'),
-                        'filename' => $image->getClientOriginalName()
-                    ],
-                    [
-                        'name' => 'key',
-                        'contents' => env('IMGBB_API_KEY')
-                    ]
-                ]
-            ]);
-
-            $json = json_decode($response->getBody()->getContents(), true);
-            $data = $json['data'];
-            return $data['url'];
-        } catch (\Throwable $th) {
-            return false;
-        }
-
-    }
-
-    public function store(StoreEventRequest $request)
-    {
-
-        $res = $this->storeImage($request);
-        $image_url = $res ? $res : 'https://picsum.photos/id/1/200/300';
-    
-        $event = Event::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'type' => $request->type,
-            'image_url' => $image_url,
-            'user_id' => $request->user()->id
-        ]);
-
-        $user_timezone = $request->user()->timezone;
-
-        EventDate::insert(array_map(function($date) use ($event, $user_timezone) {
-
-            $utc_date = Carbon::createFromFormat('Y-m-d H:i:s', $date, $user_timezone)->setTimezone('UTC');
-
-            return [
-                'date' => $utc_date,
-                'event_id' => $event->id
-            ];
-        }, $request->dates));
-
-        $dates = $event->datesToUserTimezone();
-        // spread the dates to the the event object
-        $event->local_dates = $dates;
+        $event  = $eventService->registerEvent($request);
 
         return response()->json([
             'message' => 'Event created successfully',
@@ -121,40 +68,24 @@ class EventController extends Controller
         ]);
     }
 
-    
-    public function showWithMembers(Request $request, $id)
-    {
-        $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
 
-        if(!$event){
-            return response()->json([
-                'message' => 'item not found'
-            ], 404);
-        }
-
-        $memberListPagination = Member::where('event_id', $event->id)->paginate(10);
-
-        return response()->json([
-            'message' => 'item retrieved successfully',
-            'pagination' => $memberListPagination
-        ]);
-    }
 
     /**
      * Show the form for editing the specified resource.
      */
 
-    public function showWithAttendance()
+
+
+    public function edit(EditEventRequest $request, $event, EventService $eventService)
     {
-        
+        $event = $eventService->updateEvent($request, $event);
+
+        return response()->json([
+            'message' => 'item updated successfully',
+            'item' => $event
+        ]);
     }
-
-
-    public function edit(Event $event)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      */
@@ -171,7 +102,7 @@ class EventController extends Controller
 
         $event = Event::where('id', $request->id)->where('user_id', $request->user()->id)->first();
 
-        if(!$event){
+        if (!$event) {
             return response()->json([
                 'message' => 'item not found'
             ], 404);
@@ -183,5 +114,4 @@ class EventController extends Controller
             'message' => 'item deleted successfully'
         ]);
     }
-
 }
