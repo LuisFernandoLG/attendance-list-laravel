@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Ichtrojan\Otp\Otp;
-
+use Illuminate\Http\Response;
 
 class RegisterUserController extends Controller
 {
@@ -25,6 +25,6 @@ class RegisterUserController extends Controller
             'message' => 'Item created successfully',
             'user' => $user,
             'token' => $token,
-        ]);
+        ], Response::HTTP_CREATED);
     }
 }

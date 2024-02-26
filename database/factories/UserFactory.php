@@ -29,6 +29,10 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'rol' => 'none',
+            'auth_type' => 'email',
+            'image_url' => 'https://www.gravatar.com/avatar',
+            'timezone' => 'UTC',
         ];
     }
 
