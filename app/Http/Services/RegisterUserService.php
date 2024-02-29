@@ -21,8 +21,8 @@ class RegisterUserService
     }
 
     public function isEmailAvailable($email):bool{
-        $user = User::where('email', $email) ? false : true;
-        return $user;
+        $available = User::where('email', $email)->first() ? false : true;
+        return $available;
     }
 
     public function sendEmail(User $user): void

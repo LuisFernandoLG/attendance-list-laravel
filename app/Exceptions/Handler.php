@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -55,7 +56,7 @@ class Handler extends ExceptionHandler
             return \response()->json([
                 'message' => 'Validation error',
                 'errors' => $errors
-            ], 403);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return parent::render($request, $exception);

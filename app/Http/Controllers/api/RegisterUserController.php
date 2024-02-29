@@ -12,14 +12,15 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Http;
 
 class RegisterUserController extends Controller
 {
     public function store(RegisterUserRequest $request, RegisterUserService $registerUserService){
         if(!$registerUserService->isEmailAvailable($request->email)) return response()->json([
             'message' => 'Email has been already taken',
-            'errors' => ['email' => ['email is alreadt taken']]
-        ]);
+            'errors' => ['email' => ['email is already taken']]
+        ], Response::HTTP_CONFLICT);
         
         $user = $registerUserService->register($request->name, $request->email, $request->password, $request->timezone);
         $registerUserService->sendEmail($user);

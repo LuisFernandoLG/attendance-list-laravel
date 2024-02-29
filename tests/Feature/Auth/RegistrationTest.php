@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -41,7 +42,7 @@ class RegistrationTest extends TestCase
 
         $response = $this->post('/api/auth/register', [
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test3@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
             'timezone' => $timezone,
@@ -50,14 +51,14 @@ class RegistrationTest extends TestCase
         
         $response2 = $this->post('/api/auth/register', [
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test3@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
             'timezone' => $timezone,
         ], ['Accept' => 'application/json']);
 
 
-        $response2->assertStatus(422);
+        $response2->assertStatus(Response::HTTP_CONFLICT);
     }
 
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -18,14 +19,14 @@ class AuthController extends Controller
             return response()->json([
                 'message'=> "The email does not belong to any user",
                 'errors' => ['email'=>['Email not registered']]
-            ]);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         if (!password_verify($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Invalid password',
                 'errors' => ['password' => 'Invalid password']
-            ], 400);
+            ],  Response::HTTP_NOT_FOUND);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
