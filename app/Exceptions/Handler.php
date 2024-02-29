@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -47,6 +47,14 @@ class Handler extends ExceptionHandler
             // Return a response with your custom message
             return \response()->json([
                 'message' => 'The action is unauthorized',
+            ], 403);
+        }
+        
+        if($exception instanceof ValidationException){
+            $errors = $exception->validator->errors()->getMessages();
+            return \response()->json([
+                'message' => 'Validation error',
+                'errors' => $errors
             ], 403);
         }
 
