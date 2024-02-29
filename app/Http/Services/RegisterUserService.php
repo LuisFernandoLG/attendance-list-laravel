@@ -10,7 +10,6 @@ class RegisterUserService
 
     public function register($name, $email, $password, $timezone): User
     {
-        // dd($name, $email, $password, $timezone);
         $user = User::create([
             'name' => $name,
             'email' => $email,
@@ -18,6 +17,11 @@ class RegisterUserService
             'timezone' => $timezone
         ]);
 
+        return $user;
+    }
+
+    public function isEmailAvailable($email):bool{
+        $user = User::where('email', $email) ? false : true;
         return $user;
     }
 

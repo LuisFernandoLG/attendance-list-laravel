@@ -27,16 +27,9 @@ class VerifyEmailRequest extends FormRequest
                 'required',
                 'email',
                 'max:100',
-                'exists:users,email'
             ],
             'code' => 'required|string'
          ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'email.exists' => 'The :attribute does not belong to any user.'
-        ];
-    }
 }

@@ -16,6 +16,11 @@ use Illuminate\Http\Response;
 class RegisterUserController extends Controller
 {
     public function store(RegisterUserRequest $request, RegisterUserService $registerUserService){
+        if(!$registerUserService->isEmailAvailable($request->email)) return response()->json([
+            'message' => 'Email has been already taken',
+            'errors' => ['email' => ['email is alreadt taken']]
+        ]);
+        
         $user = $registerUserService->register($request->name, $request->email, $request->password, $request->timezone);
         $registerUserService->sendEmail($user);
     

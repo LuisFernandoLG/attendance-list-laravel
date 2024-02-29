@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 class VerifyEmailController extends Controller
 {
     public function store(VerifyEmailRequest $request, RegisterUserService $registerUserService){      
+        $user = User::where('email', $request->email);
+        if(!$user) return response()->json([
+            'message' => 'The email does not belong to any user',
+            'errors' => ['email'=>['The email does not belong to any user']]
+        ]);
+        
         try {
             $result = $registerUserService->verifyEmailOtp($request->email, $request->code);
             return response()->json([
@@ -26,6 +32,12 @@ class VerifyEmailController extends Controller
     }
 
     public function show(ResendEmailVerificationRequest $request, RegisterUserService $registerUserService){
+        $emailExist = User::where('email', $request->email);
+        if(!$emailExist) return response()->json([
+            'message'=> 'The email does not belong to any user',
+            'errors'=> ['email' => ['The email does not belong to any user']]
+        ]);
+        
         $result = $registerUserService->resendEmail($request->email);
 
         return response()->json([

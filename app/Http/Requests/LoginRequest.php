@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 
 class LoginRequest extends FormRequest
 {
@@ -22,15 +23,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|max:100|exists:users,email',
+            'email' => 'required|string|email|max:100',
             'password' => 'required|string'
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'email.exists' => 'The :attribute does not belong to any user.'
         ];
     }
 }

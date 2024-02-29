@@ -12,8 +12,14 @@ class AuthController extends Controller
 {
     public function store(LoginRequest $request)
     {
-
         $user = User::where('email', $request->email)->first();
+
+        if(!$user){
+            return response()->json([
+                'message'=> "The email does not belong to any user",
+                'errors' => ['email'=>['Email not registered']]
+            ]);
+        }
 
         if (!password_verify($request->password, $user->password)) {
             return response()->json([
