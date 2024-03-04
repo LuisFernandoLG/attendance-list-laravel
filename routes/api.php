@@ -36,18 +36,19 @@ Route::get('/attendance/{event}/{shortId}', [ControlledListRecordController::cla
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterUserController::class, 'store']);
-    Route::get('/resend-email', [VerifyEmailController::class, 'show']);
+    Route::post('/resend-email', [VerifyEmailController::class, 'show']);
     Route::post('/verify-email', [VerifyEmailController::class, 'store']);
     Route::post('/login', [AuthController::class, 'store']);
 });
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    // LOGIN without email verification will send new otp code
     Route::get('/user', [AuthController::class, 'show']);
     Route::post('/logout', [AuthController::class, 'destroy']);
 
 
-    Route::middleware(['verified'])->group(function () {
+    // Route::middleware(['verified'])->group(function () {
         Route::get('/events', [EventController::class, 'index']);
         Route::post('/events', [EventController::class, 'store']);
         Route::get('/events/{id}', [EventController::class, 'show']);
@@ -60,7 +61,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/events/{id}/members', [EventMemberController::class, 'index']);
         Route::delete('/events/{event}/members/{member}', [EventMemberController::class, 'destroy']);
         Route::put('/events/{event}/members/{member}', [EventMemberController::class, 'edit']);
-        
-    });
+    // });
     
 });
