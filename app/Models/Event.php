@@ -15,7 +15,7 @@ class Event extends Model
 
     public function dates()
     {
-        return $this->hasMany(EventDate::class);
+        return $this->hasMany(EventDate::class, "event_id", "id");
     }
 
     public function datesToUserTimezone()

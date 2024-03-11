@@ -59,9 +59,10 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(EventRequest $eventRequest, Event $event)
+    public function show(EventRequest $eventRequest, $id)
     {
-        $event->load('dates');
+        $event = Event::find($id);
+        $event->load('dates');        
 
         return response()->json([
             'message' => 'item retrieved successfully',
