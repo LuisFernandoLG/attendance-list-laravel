@@ -42,9 +42,9 @@ class EventMemberController extends Controller
             'custom_id' => $shortHumanId ,
             'email' => $request->email ?? null,
             'phone' => $request->phone ?? null,
-            // 'details' => $request->details,
+            'details' => $request->details,
             // 'image_url' => $request->image_url,
-            // 'notifyByEmail' => $request->notifyByEmail,
+            'notifyByEmail' => $request->notifyByEmail,
             // 'notifyByPhone' => $request->notifyByPhone,
             'event_id' => $eventId,
         ]);
