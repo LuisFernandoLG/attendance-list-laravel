@@ -16,7 +16,9 @@ class EventMemberController extends Controller
     public function index(EventRequest $eventRequest, $id){
         $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
 
-        $memberListPagination = Member::where('event_id', $event->id)->paginate(10);
+        $query = Member::query()->where('event_id', $event->id)->orderBy('created_at', 'desc');
+
+        $memberListPagination = $query->paginate(10);
 
         $memberListPagination->getCollection()->transform(function ($member) use ($event) {
             $member->url_attendance = route('attendance.store', ['event' => $event->id, 'shortId' => $member->custom_id]);
@@ -44,7 +46,7 @@ class EventMemberController extends Controller
             'phone' => $request->phone ?? null,
             'details' => $request->details,
             // 'image_url' => $request->image_url,
-            'notifyByEmail' => $request->notifyByEmail,
+            'notifyByEmail' => $request->notifyByEmail ? true : false,
             // 'notifyByPhone' => $request->notifyByPhone,
             'event_id' => $eventId,
         ]);
