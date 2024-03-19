@@ -100,8 +100,8 @@ class EventService
     public function updateEvent(Request $request, $id): Event
     {
         $event = Event::find($id);
-        $res = $this->storeImage($request);
-        $image_url = $res ? $res : $event->image_url;
+        // $res = $this->storeImage($request);
+        // $image_url = $res ? $res : $event->image_url;
 
         $event->update([
             'name' => $request->name,

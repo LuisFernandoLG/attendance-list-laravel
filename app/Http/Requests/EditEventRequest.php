@@ -31,7 +31,6 @@ class EditEventRequest extends FormRequest
             'name' => 'required|string',
             'description' => 'required|string',
             'image' => 'image|mimes:jpg,png,jpeg,webp|max:2048',
-            'type' => 'required|string|in:CONTROLLED,UNCONTROLLED',
             'dates' => 'required|array|min:1',
             'dates.*' => [
                 'required',
