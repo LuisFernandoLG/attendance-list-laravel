@@ -53,14 +53,17 @@ class ControlledListRecordController extends Controller
         // validate if the array of dates is any of them today
         $dates = EventDate::where('event_id', $eventId)->get();
 
-        // get today's date
-        // dates look like this 2021-08-01 00:00:00
-        $today = Carbon::now()->setTimezone('UTC')->toDateString();
+        // 
+
+
+        
 
         $dateValid = false;
 
         foreach ($dates as $date) {
-            $date = date('Y-m-d', strtotime($date->date));
+            $date = Carbon::parse($date->date)->toDateString();
+            $today = Carbon::now($timezone)->toDateString();
+            
             if ($date === $today) {
                 $dateValid = true;
                 break;
@@ -69,7 +72,10 @@ class ControlledListRecordController extends Controller
 
         if (!$dateValid) {
             return response()->json([
-                'message' => 'Event not today'
+                'message' => 'Event not today',
+                'expected_dates' => $dates,
+                'today' => $today,
+                
             ], 404);
         }
 

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class EventAttendanceController extends Controller
 {
     public function show(Request $request, $id){
+
         $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
 
         if(!$event){
@@ -17,11 +18,12 @@ class EventAttendanceController extends Controller
             ], 404);
         }
 
-        $attendance = ControlledListRecord::where('event_id', $id)->get();
+        $query = ControlledListRecord::query();
+        $pagination = $query->where('event_id', $id)->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([
             'message' => 'item retrieved successfully',
-            'items' => $attendance
+            'pagination' => $pagination
         ]);
     }
 }
