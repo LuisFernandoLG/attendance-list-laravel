@@ -106,8 +106,6 @@ class EventService
         $event->update([
             'name' => $request->name,
             'description' => $request->description,
-            'type' => $request->type,
-            'image_url' => $image_url
         ]);
 
         $this->deleteAllDates($event->id);
