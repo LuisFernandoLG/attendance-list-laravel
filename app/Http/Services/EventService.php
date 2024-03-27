@@ -18,7 +18,7 @@ class EventService
 
     public function get_all(Request $request): Collection
     {
-        $events = Event::where('user_id', $request->user()->id)->get();
+        $events = Event::where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
 
         return $events;
     }
