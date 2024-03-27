@@ -32,7 +32,8 @@ use Illuminate\Support\Facades\Route;
 // update - PUT/PATCH /users/{id}
 // destroy - DELETE /users/{id}
 
-Route::get('/attendance/{event}/{shortId}', [ControlledListRecordController::class, 'store'])->name('attendance.store');
+Route::get("/attendance/info/{event}/{shortId}", [ControlledListRecordController::class, 'getInfo'])->name('attendance.info');
+Route::post('/attendance/{event}/{shortId}', [ControlledListRecordController::class, 'store'])->name('attendance.store');
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterUserController::class, 'store']);

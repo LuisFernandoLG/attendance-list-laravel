@@ -94,12 +94,33 @@ class ControlledListRecordController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    public function getInfo(Request $request, $eventId, $shortId){
+        $user = Member::where('event_id', $eventId)
+        ->where('custom_id', $shortId)
+        ->first();
+        
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+       $event = Event::find($eventId);
+    
+       return response()->json([
+            'message'=> 'item data retrieved successfully',
+           'event' => $event,
+           'user' => $user,
+       ], Response::HTTP_OK);
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(ControlledListRecord $controlledListRecord)
     {
-        //
+        // displays event and user data
+
     }
 
     /**
