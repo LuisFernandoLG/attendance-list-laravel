@@ -31,7 +31,7 @@ class VerifyAccountByEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('luislopez1099lg@gmail.com', 'My Attendance List'),
+            from: new Address('grave281@gmail.com', 'My Attendance List'),
             subject: 'Verify Account By Email',
         );
     }
