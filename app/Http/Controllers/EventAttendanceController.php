@@ -50,7 +50,7 @@ class EventAttendanceController extends Controller
         $perPage = $request->has('perPage') ? $request->perPage : $this->membersPerPage;
         
         $pagination = $query->
-                            select('event_id', 'member_id', DB::raw('MAX(created_at) as last_attendance, COUNT(*) as attendances'))
+                            select('*', DB::raw('MAX(created_at) as last_attendance, COUNT(*) as attendances'))
                                         ->groupBy('member_id')
                                         ->paginate($perPage);
 
@@ -59,7 +59,7 @@ class EventAttendanceController extends Controller
 
         return response()->json([
             'date' => $date,
-            '$userTimezone' => $userTimezone,
+            'userTimezone' => $userTimezone,
             'message' => 'item retrieved successfully',
             'pagination' => $pagination,
         ]);
