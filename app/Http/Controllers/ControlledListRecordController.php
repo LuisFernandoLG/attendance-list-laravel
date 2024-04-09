@@ -106,11 +106,13 @@ class ControlledListRecordController extends Controller
         }
 
        $event = Event::find($eventId);
+       $dates = EventDate::where('event_id', $eventId)->get();
     
        return response()->json([
             'message'=> 'item data retrieved successfully',
            'event' => $event,
            'user' => $user,
+           'dates'=> $dates
        ], Response::HTTP_OK);
     }
 

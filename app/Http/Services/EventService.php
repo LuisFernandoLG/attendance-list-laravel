@@ -62,11 +62,11 @@ class EventService
         $user_timezone = $request->user()->timezone;
 
         EventDate::insert(array_map(function ($date) use ($event, $user_timezone) {
-
-            $utc_date = Carbon::createFromFormat('Y-m-d H:i:s', $date, $user_timezone)->setTimezone('UTC');
+            // Convert date to utc removed
+            // $utc_date = Carbon::createFromFormat('Y-m-d H:i:s', $date, $user_timezone)->setTimezone('UTC');
 
             return [
-                'date' => $utc_date,
+                'date' => $date,
                 'event_id' => $event->id
             ];
         }, $request->dates));
