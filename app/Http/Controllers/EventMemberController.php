@@ -71,9 +71,10 @@ class EventMemberController extends Controller
 
     public function edit(Request $request, Event $event, Member $member){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'string|max:255',
+            'email' => 'string|email|max:255',
             'phone' => 'string|max:255',
-            'details' => 'required|string|max:255',
+            'details' => 'string|max:255',
             'image_url' => 'string|max:255',
         ]);
 
@@ -85,10 +86,11 @@ class EventMemberController extends Controller
         }
 
         $member->update([
-            'name' => $request->name,
-            'details' => $request->details,
-            'phone' => $request->phone ?? null,
-            'image_url' => $request->image_url ?? null,
+            'name' => $request->name ?? $member->name,
+            'email' => $request->email ?? $member->email,
+            'details' => $request->details ?? $member->details,
+            'phone' => $request->phone ?? $member->phone,
+            'image_url' => $request->image_url ?? $member->image_url,
         ]);
 
         return response()->json([
