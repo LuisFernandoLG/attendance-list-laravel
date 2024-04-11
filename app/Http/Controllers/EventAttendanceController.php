@@ -24,7 +24,7 @@ class EventAttendanceController extends Controller
             ], 404);
         }
 
-        $now = Carbon::now()->timezone($userTimezone)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
         $date = $request->has('date') ? Carbon::createFromDate($request->date)->format('Y-m-d') : $now;
 
         config()->set('database.connections.mysql.strict', false);
