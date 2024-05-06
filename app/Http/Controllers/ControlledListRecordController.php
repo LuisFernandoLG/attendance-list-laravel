@@ -53,31 +53,45 @@ class ControlledListRecordController extends Controller
         // validate if the array of dates is any of them today
         $dates = EventDate::where('event_id', $eventId)->get();
 
-        // 
-
-
-        
-
         $dateValid = false;
 
-        foreach ($dates as $date) {
-            $date = Carbon::parse($date->date)->toDateString();
-            $today = Carbon::now($timezone)->toDateString();
-            
-            if ($date === $today) {
+        foreach ($dates as $item) {
+            // For some reason the date is one day ahead
+            $date = Carbon::createFromFormat('Y-m-d H:i:s', $item->date); // ✅
+            $now = Carbon::now(); // ✅
+            $datePlus24 = Carbon::createFromFormat('Y-m-d H:i:s', $item->date)->addDay(2); // ✅
+
+            $isValid = $now->greaterThanOrEqualTo($date) && $now->lessThanOrEqualTo($datePlus24 );
+                // $data = [
+                    
+                //     "item" => $item->date,
+                //     "date" => $date->toString(),
+                //     "today" => $now->toString(),
+                //     "datePlus24" => $datePlus24->toString(),
+                //     "datePlus24 timezone" => $datePlus24 ->tzName,
+                //     "isValid" => $isValid,
+                //     "greather than" => $now->gte($date),
+                //     "today timezone" => $now->tzName,
+                //     "less than" => $now->lessThanOrEqualTo($datePlus24 )
+                // ];
+
+                // return response()->json([
+                //     'data' => $data
+                // ], 202);
+
+            if ($isValid) {
                 $dateValid = true;
                 break;
             }
         }
-
+        
         if (!$dateValid) {
             return response()->json([
                 'message' => 'Event not today',
                 'expected_dates' => $dates,
-                'today' => $today,
-                
             ], 404);
         }
+
 
         $attendance = ControlledListRecord::create([
             'event_id' => $eventId,
@@ -85,12 +99,13 @@ class ControlledListRecordController extends Controller
         ]);
 
 
-        $attendance_local_time = Carbon::parse($attendance->created_at)->setTimezone($timezone)->toDateTimeString();
+        // $attendance_local_time = Carbon::parse($attendance->created_at)->setTimezone($timezone)->toDateTimeString();
 
         return response()->json([
             'message' => 'Attendance recorded',
-            'attendance_at' => $attendance_local_time,
+            // 'attendance_at' => $attendance_local_time,
             'timezone' => $timezone,
+            'attendance' => $attendance
         ], Response::HTTP_CREATED);
     }
 
