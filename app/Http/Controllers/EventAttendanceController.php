@@ -7,6 +7,7 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EventAttendanceController extends Controller
 {
@@ -14,6 +15,17 @@ class EventAttendanceController extends Controller
     private $membersPerPage = 30;
 
     public function show(Request $request, $id){
+
+        // validate $date
+        $fields = Validator::make($request->all(), [
+            'date' => 'required|date|date_format:Y-m-d H:i:s',
+        ]);
+
+        if($fields->fails()){
+            return response()->json([
+                'message' => 'invalid date format'
+            ], 400);
+        }
 
         $event = Event::where('id', $id)->where('user_id', request()->user()->id)->first();
         $userTimezone = $request->user()->timezone;
@@ -23,14 +35,30 @@ class EventAttendanceController extends Controller
                 'message' => 'item not found'
             ], 404);
         }
+        
+       
+        $date = Carbon::createFromDate($request->date);
+        $datePlus24 = Carbon::createFromDate($request->date)->addHours(24);
+        
+        // $date = Carbon::createFromDate($request->date)->format('Y-m-d H:i:s');
 
-        $now = Carbon::now()->format('Y-m-d');
-        $date = $request->has('date') ? Carbon::createFromDate($request->date)->format('Y-m-d') : $now;
+
+        // return response()->json(([
+        //     "startDate" => $date,
+        //     "finalDate" => $datePlus24,
+        // ]));
+        
 
         config()->set('database.connections.mysql.strict', false);
         DB::reconnect();
         
         $query = ControlledListRecord::query()->with('member')->where('event_id', $id)->whereDate('created_at', $date);
+        $query = ControlledListRecord::query()
+                                        ->with('member')
+                                        ->where('event_id', $id)
+                                        ->where("created_at", ">", $date)
+                                        ->where("created_at", "<", $datePlus24);
+
 
 
         if($request->has('search')){
